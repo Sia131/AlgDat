@@ -1,0 +1,23 @@
+function bruteforce(x)
+    n_rows = div(length(x),2)
+    min_dist = 99999
+    combinations = Array{Int64}(undef, 0, 2)
+    incrementer = 1
+    for i in 1:n_rows
+        for j in incrementer:n_rows
+            if (i != j)
+                combinations = vcat(combinations, [i j])
+                dist = sqrt((x[i,1]-x[j,1])^2 + (x[i,2]-x[j,2])^2)
+                if (dist < min_dist)
+                    min_dist = dist
+                end
+            end
+        end
+        incrementer += 1
+    end
+    println(combinations)
+    return min_dist
+end
+
+x = [1 1; 10 0; 2 2; 5 5]
+println(bruteforce(x))

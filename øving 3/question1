@@ -1,0 +1,89 @@
+#=
+flettersortering
+kjent kjøretid på O(nlog(n))
+implementere merge sort
+tabellen man skal sortere er en samling av (x,y) kordinater
+man skal kunne velge om man vil sortere x eller y kordinater
+=#
+
+function mergearrays(x,y,coordinate)
+    dim_x = size(x)
+    dim_y = size(y)
+    tot_rows = dim_x[1] + dim_y[1]
+    A = fill(0,(6, 2))
+    i = 1
+    j = 1
+
+    x_col_1_temp = x[:,1]
+    x_col_2_temp = x[:,2]
+    y_col_1_temp = y[:,1]
+    y_col_2_temp = y[:,2]
+
+    push!(x_col_1_temp,2^60)
+    push!(x_col_2_temp,2^60)
+    push!(y_col_1_temp,2^60)
+    push!(y_col_2_temp,2^60)
+
+    x = hcat(x_col_1_temp,x_col_2_temp)
+    y = hcat(y_col_1_temp,y_col_2_temp)
+
+    for k = 1:tot_rows
+        if x[i,coordinate] <= y[j,coordinate]
+            A[k,:] = x[i,:]
+            i = i + 1
+
+        else
+            A[k,:] = y[j,:]
+            j = j + 1
+        end
+    end
+    return A
+end
+
+function mergesort(x, coordinate)
+    dim_x = size(x)
+    if dim_x[1] > 1
+
+        mod = dim_x[1]%2
+        midpoint = (dim_x[1] - mod)/2
+        midpoint =trunc(Int, midpoint)
+
+        A = fill(0, (midpoint, 2))
+        #println(A)
+
+        if mod == 1
+            a = dim_x[1] - midpoint
+        else
+            a = dim_x[1] - midpoint + 1
+        end
+
+        a = trunc(Int, a)
+        B = fill(0, a, 2)
+
+        for i = 1:midpoint
+            A[i,:] = x[i,:]
+        end
+
+        t = 1
+        for j = a:dim_x[1]
+            B[t,:] = x[j,:]
+            t = t + 1
+        end
+
+        mergesort(A, coordinate)
+        mergesort(B, coordinate)
+        C = mergearrays(A, B, coordinate)
+        return C
+    end
+end
+
+B = [2 1; 5 5; 7 6]
+A = [2 1; 4 3; 6 5]
+
+C = [1 2; 4 3; 3 4; 2 1]
+
+Z = mergesort(C, 1)
+
+q = [2 1]
+a = size(q)
+println(a)

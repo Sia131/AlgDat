@@ -1,0 +1,32 @@
+#= I denne oppgave blir det brukt dobbel-lenket liste
+implementere funksjonen maxofdoublelinkedlist.
+tar inn dobbel lenket liste som argument
+skal finne det største elemente i listen
+
+du blir ikke gitt første elementet i liste (head)
+=#
+
+mutable struct NodeDoublyLinked
+    prev::Union{NodeDoublyLinked, Nothing} # Er enten forrige node eller nothing
+    next::Union{NodeDoublyLinked, Nothing} # Er enten neste node eller nothing
+    value::Int # Verdien til noden
+end
+
+function maxofdoublelinkedlist(linkedlist)
+    prev_list = linkedlist
+    max_value = prev_list.value
+    while prev_list.prev != nothing
+        prev_list = prev_list.prev
+        if(max_value < prev_list.value)
+            max_value = prev_list.value
+        end
+    end
+    next_list = prev_list
+    while next_list.next != nothing
+        next_list = next_list.next
+        if(max_value < next_list.value)
+            max_value = next_list.value
+        end
+    end
+    return max_value
+end

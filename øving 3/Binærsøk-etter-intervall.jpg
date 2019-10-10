@@ -1,0 +1,46 @@
+function binaryintervalsearch(x, delta, coordinate)
+    x_length = length(x)
+    n_rows = div(x_length,2)
+    mid_ind = div(x_length,4)
+    if rem(n_rows,2) == 1
+        mid_ind += 1
+        median = x[mid_ind, coordinate]
+    elseif rem(x_length,4) == 0
+        median = (x[mid_ind, coordinate] + x[mid_ind+1, coordinate])/2
+        mid_ind += 0.5
+    end
+    println("l: ", mid_ind, "\tmed: ", median)
+    upper_margin = median + delta
+    lower_margin = median - delta
+    lower_index, upper_index = -1, -1
+    low_set, upper_set = 0, 0
+    for i in 1:n_rows
+        if ((x[i, coordinate] >= lower_margin) && (x[i, coordinate] <= upper_margin) && (low_set == 0))
+            lower_index = i
+            low_set = 1
+        end
+        if ((x[i, coordinate] >= lower_margin) && (x[i, coordinate] <= upper_margin))
+            upper_index = i
+        end
+    end
+    return (lower_index, upper_index)
+end
+
+
+x = [1.0 0.0; 2.0 0.0; 3.0 0.0]
+delta=0.5
+coordinate = 1
+println("\nFirst:")
+println(binaryintervalsearch(x, delta, coordinate))
+
+x = [1.0 0.0; 2.0 0.0; 3.0 0.0]
+delta = 1.0
+coordinate = 1
+println("\nFourth:")
+println(binaryintervalsearch(x, delta, coordinate))
+
+x=[1.0 -1.0; 2.0 2.0; 3.0 3.0; 4.0 5.0; 5.0 5.0]
+delta=1.0
+coordinate = 1
+println("\nFifth:")
+println(binaryintervalsearch(x, delta, coordinate))

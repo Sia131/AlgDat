@@ -1,0 +1,38 @@
+#= Du skal lære å traversere i en lenket liste.
+det er en simpel lenket liste
+du skal ta inn Head og value
+du skal traverse listen og returnere tallet som er i plassen til inded argumentet
+hvis indexen er større enn listen skal du returnere -1
+=#
+
+mutable struct Nod
+    next::Union{Nod, Nothing} # next kan peke på et Node-objekt eller ha verdien nothing.
+    value::Int
+end
+
+function createlinkedlist(length)
+    # Creates the list starting from the last element
+    # This is done so the last element we generate is the head
+    child = nothing
+    nod = nothing
+
+    for i in 1:length
+        node = Nod(child, rand(1:800))
+        child = nod
+    end
+    return nod
+end
+
+function findindexinlist(linkedlist, index)
+    next_value = linkedlist
+    for i = 1:index - 1
+        if next_value != nothing
+            next_value = next_value.next
+        end
+    end
+    if next_value == nothing
+        return -1
+    else
+        return next_value.value
+    end
+end

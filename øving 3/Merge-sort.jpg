@@ -1,0 +1,92 @@
+function mergearrays_1D(x,y,coordinate)
+    mergedArray = []
+    x_copy = []
+    y_copy = []
+    for i in 1:length(x)
+        push!(x_copy, x[i])
+    end
+    push!(x_copy, 99999)
+    for j in 1:length(y)
+        push!(y_copy, y[j])
+    end
+    push!(y_copy, 99999)
+    i,j = 1,1
+    iteration_l = length(y)+length(x)
+    for k in 1:iteration_l
+        if x_copy[i] <= y_copy[j]
+            push!(mergedArray, x_copy[i])
+            i += 1
+        else
+            push!(mergedArray, y_copy[j])
+            j += 1
+        end
+    end
+    return mergedArray
+end
+
+#x og y er to sorterte arrays, coordinate angir koordinat akse
+function mergearrays_2D(x,y,coordinate)
+    mergedArray = Array{Int64}(undef,0,2)
+    x_copy = Array{Int64}(undef,0,2)
+    y_copy = Array{Int64}(undef,0,2)
+
+    for i in 1:div(length(x),2)
+        x_copy = vcat(x_copy, [x[i,1] x[i,2]])
+    end
+    x_copy = vcat(x_copy, [9999 9999])
+
+    for j in 1:div(length(y),2)
+        y_copy = vcat(y_copy, [y[j,1] y[j,2]])
+    end
+    y_copy = vcat(y_copy,[9999 9999])
+
+    i,j = 1,1
+    iteration_l = div(length(y),2) + div(length(x),2)
+    for k in 1:iteration_l
+        if x_copy[i,coordinate] <= y_copy[j,coordinate]
+            mergedArray = vcat(mergedArray, [x_copy[i,1] x_copy[i,2]])
+            i += 1
+        else
+            mergedArray = vcat(mergedArray, [y_copy[j,1] y_copy[j,2]])
+            j += 1
+        end
+    end
+    return mergedArray
+end
+
+
+
+#x usortert array, coordinate angir koordinat akse vi skal sortere langs
+function mergesort(x, coordinate)
+    if div(length(x),2) > 1
+        middle_index = div(length(x),4)
+
+        left = Array{Int64}(undef, 0, 2)
+        for i in 1:middle_index
+            left = vcat(left, [x[i, 1] x[i, 2]])
+        end
+
+        right = Array{Int64}(undef, 0, 2)
+        for j in middle_index+1:div(length(x),2)
+            right = vcat(right, [x[j, 1] x[j, 2]])
+        end
+        #println("X array: ", x, "\nLeft: ", left, "\tRight: ", right)
+        left = mergesort(left, coordinate)
+        right = mergesort(right,coordinate)
+        return mergearrays_2D(left, right, coordinate)
+    else
+        return x
+    end
+end
+
+
+println("Sorting...\n")
+a = [1, 2, 8, 10]
+b = [3, 4, 5, 6]
+c = [1 2; 3 4; 5 6]
+d = [2 1; 3 1; 4 8]
+c_d = [1 2; 3 4; 5 6; 4 8; 3 1; 2 1; 0 0]
+
+#println(mergearrays_1D(a, b, 1))
+#println(mergearrays_2D(c, d, 2))
+println(mergesort(c_d, 1))

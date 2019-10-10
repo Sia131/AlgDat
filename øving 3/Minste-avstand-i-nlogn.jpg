@@ -1,0 +1,228 @@
+function mergearrays_2D(x,y,coordinate)
+    mergedArray = Array{Int64}(undef,0,2)
+    x_copy = Array{Int64}(undef,0,2)
+    y_copy = Array{Int64}(undef,0,2)
+
+    for i in 1:div(length(x),2)
+        x_copy = vcat(x_copy, [x[i,1] x[i,2]])
+    end
+    x_copy = vcat(x_copy, [9999 9999])
+
+    for j in 1:div(length(y),2)
+        y_copy = vcat(y_copy, [y[j,1] y[j,2]])
+    end
+    y_copy = vcat(y_copy,[9999 9999])
+
+    i,j = 1,1
+    iteration_l = div(length(y),2) + div(length(x),2)
+    for k in 1:iteration_l
+        if x_copy[i,coordinate] <= y_copy[j,coordinate]
+            mergedArray = vcat(mergedArray, [x_copy[i,1] x_copy[i,2]])
+            i += 1
+        else
+            mergedArray = vcat(mergedArray, [y_copy[j,1] y_copy[j,2]])
+            j += 1
+        end
+    end
+    return mergedArray
+end
+
+function mergesort(x, coordinate)
+    if div(length(x),2) > 1
+        middle_index = div(length(x),4)
+
+        left = Array{Int64}(undef, 0, 2)
+        for i in 1:middle_index
+            left = vcat(left, [x[i, 1] x[i, 2]])
+        end
+
+        right = Array{Int64}(undef, 0, 2)
+        for j in middle_index+1:div(length(x),2)
+            right = vcat(right, [x[j, 1] x[j, 2]])
+        end
+        #println("X array: ", x, "\nLeft: ", left, "\tRight: ", right)
+        left = mergesort(left, coordinate)
+        right = mergesort(right,coordinate)
+        return mergearrays_2D(left, right, coordinate)
+    else
+        return x
+    end
+end
+
+function bruteforce(x)
+    n_rows = div(length(x),2)
+    min_dist = 99999
+    combinations = Array{Int64}(undef, 0, 2)
+    incrementer = 1
+    for i in 1:n_rows
+        for j in incrementer:n_rows
+            if (i != j)
+                combinations = vcat(combinations, [i j])
+                dist = sqrt((x[i,1]-x[j,1])^2 + (x[i,2]-x[j,2])^2)
+                if (dist < min_dist)
+                    min_dist = dist
+                end
+            end
+        end
+        incrementer += 1
+    end
+    return min_dist
+end
+
+function splitintwo(x,y)
+    x_length = length(x)
+    n_rows = div(x_length,2)
+    middle_index = div(x_length,4)
+    if rem(n_rows,2) == 1
+        middle_index += 1
+        x_median = x[middle_index, 1]
+    elseif rem(x_length,4) == 0
+        x_median = (x[middle_index, 1] + x[middle_index+1, 1])/2
+        middle_index += 0.5
+    end
+    #println("x_median:  ", x_median)
+    x_left = Array{Float64}(undef, 0, 2)
+    x_right = Array{Float64}(undef, 0, 2)
+    #y_value_indices = Array{Float64}(undef, 0, 2)
+    for i in 1:n_rows
+        i = trunc(Int64, i)
+        if i <= floor(middle_index)
+            x_left = vcat(x_left, [x[i,1] x[i,2]])
+        else
+            x_right = vcat(x_right, [x[i,1] x[i,2]])
+        end
+    end
+
+    y_left = Array{Float64}(undef, 0, 2)
+    y_right = Array{Float64}(undef, 0, 2)
+    for j in 1:n_rows
+        j = trunc(Int64, j)
+        if y[j, 1] < x_median
+            y_left = vcat(y_left, [y[j,1] y[j,2]])
+        elseif y[j, 1] > x_median
+            y_right = vcat(y_right, [y[j,1] y[j,2]])
+        else
+            #println("HERE, j: ", j)
+            l = 1+(length(x_left)/2)
+            for k in 1:(length(x_left)/2)
+                k = trunc(Int64, k)
+                l = trunc(Int64, l)
+                if y[j, :] == x[k, :]
+                    y_left = vcat(y_left, [y[j,1] y[j,2]])
+                end
+                if l <= n_rows
+                    if y[j, :] == x[l, :]
+                        y_right = vcat(y_right, [y[j,1] y[j,2]])
+                    end
+                    l += 1
+                end
+            end
+        end
+    end
+    return [x_left,x_right,y_left,y_right]
+end
+
+function binaryintervalsearch(x, delta, coordinate)
+    x_length = length(x)
+    n_rows = div(x_length,2)
+    mid_ind = div(x_length,4)
+    if rem(n_rows,2) == 1
+        mid_ind += 1
+        median = x[mid_ind, 1]
+    elseif rem(x_length,4) == 0
+        median = (x[mid_ind, 1] + x[mid_ind+1, 1])/2
+        mid_ind += 0.5
+    end
+    println("middle_index: ", mid_ind, "\tmed: ", median, "\tdelta: ", delta)
+    upper_margin = median + delta
+    lower_margin = median - delta
+    lower_index, upper_index = -1, -1
+    low_set, upper_set = 0, 0
+    for i in 1:n_rows
+        if ((x[i, coordinate] >= lower_margin) && (x[i, coordinate] <= upper_margin) && (low_set == 0))
+            lower_index = i
+            low_set = 1
+        end
+        if ((x[i, coordinate] >= lower_margin) && (x[i, coordinate] <= upper_margin))
+            upper_index = i
+        end
+    end
+    return [lower_index, upper_index]
+end
+
+
+#Anta at closestpair får inn to arrays, hvor x er sortert på x-akse
+#og y er sortert med hensyn på y-aksen.
+function closestpair(x,y)
+    number_grunntilfelle = 3
+    x_length = length(x)
+    n_rows = x_length/2
+    x_shortest, y_shortest = 9999, 9999
+    if x_length <= (number_grunntilfelle*2)
+        return bruteforce(x)
+    else
+        (x_left, x_right, y_left, y_right) = splitintwo(x,y)
+        closestpair_left = closestpair(x_left, y_left)
+        closestpair_right = closestpair(x_right, y_right)
+        if closestpair_left <= closestpair_right
+            delta = closestpair_left
+        else
+            delta = closestpair_right
+        end
+
+        x_interval = binaryintervalsearch(x, delta, 1)
+        println("x_interval: ", x_interval)
+        delta_box_coords = Array{Float64}(undef, 0, 2)
+        for coords in x_interval[1]:x_interval[2]
+            delta_box_coords = vcat(delta_box_coords, [x[coords, 1] x[coords, 2]])
+        end
+        delta_box_coords_y_sorted = mergesort(delta_box_coords, 2)
+
+        min_y_dist = delta
+        for i in 2:(x_interval[2]-x_interval[1])
+            x1 = delta_box_coords_y_sorted[i-1,1]
+            x2 = delta_box_coords_y_sorted[i,1]
+            y1 = delta_box_coords_y_sorted[i-1,2]
+            y2 = delta_box_coords_y_sorted[i,2]
+            new_dist = sqrt((x1-x2)^2 + (y1-y2)^2)
+            if new_dist < min_y_dist
+                min_y_dist = new_dist
+            end
+        end
+        return min_y_dist
+    end
+end
+#Sørger for at closespair mottar sorterte arrays
+#La stå, denne kalles for å teste koden
+function callclosestpair(arr)
+    x = mergesort(arr,1)
+    y = mergesort(arr,2)
+    return closestpair(x,y)
+end
+
+function closestpair_brute(x,y)
+    x_shortest = bruteforce(x)
+    y_shortest = bruteforce(y)
+    if x_shortest <= y_shortest
+        return x_shortest
+    else
+        return y_shortest
+    end
+end
+
+function callclosestpair_brute(arr)
+    x = mergesort(arr,1)
+    y = mergesort(arr,2)
+    return closestpair_brute(x,y)
+end
+
+
+x = [1.0 4.0; 2.5 3.0; 3.0 2.5; 4.0 5.0; 6.0 6.0; 7.0 1.0]
+y = [10.0 10.0; 20.0 20.0; 35.5 41.5; 39.0 40.0; 50.0 50.0; 99.0 99.0]
+x_short = [1.0 4.0; 2.0 3.0; 3.0 2.0]
+y_short = [7.0 1.0; 1.0 2.0; 3.0 2.0]
+
+arr = y
+println("\nNew call...")
+println("Shortest dist: ", callclosestpair(arr))
+println("Fasit: ", callclosestpair_brute(arr))

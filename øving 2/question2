@@ -1,0 +1,20 @@
+#= lage en funksjon som skal reverse en liste(array) og bytte ut alle verdiene som er over
+max med max
+=#
+
+s = [1, 2, 3, 4, 5]
+println(length(s))
+
+function reverseandlimit(array, maxnumber)
+    new_array = []
+    for i in 1:length(array)
+        push!(new_array,pop!(array))
+    end
+    for j in 1:length(new_array)
+        if new_array[j] > maxnumber
+            new_array[j] = maxnumber
+        end
+    end
+
+    return new_array
+end

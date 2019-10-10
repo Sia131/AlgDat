@@ -1,0 +1,64 @@
+
+function splitintwo(x,y)
+    x_length = length(x)
+    n_rows = div(x_length,2)
+    middle_index = div(x_length,4)
+    if rem(n_rows,2) == 1
+        middle_index += 1
+        x_median = x[middle_index, 1]
+    elseif rem(x_length,4) == 0
+        median = (x[middle_index, coordinate] + x[middle_index+1, coordinate])/2
+        middle_index += 0.5
+    end
+    println("x_median:  ", x_median)
+    x_left = Array{Float64}(undef, 0, 2)
+    x_right = Array{Float64}(undef, 0, 2)
+    #y_value_indices = Array{Float64}(undef, 0, 2)
+    for i in 1:n_rows
+        i = trunc(Int64, i)
+        if i <= floor(middle_index)
+            x_left = vcat(x_left, [x[i,1] x[i,2]])
+        else
+            x_right = vcat(x_right, [x[i,1] x[i,2]])
+        end
+    end
+
+    y_left = Array{Float64}(undef, 0, 2)
+    y_right = Array{Float64}(undef, 0, 2)
+    for j in 1:n_rows
+        j = trunc(Int64, j)
+        if y[j, 1] < x_median
+            y_left = vcat(y_left, [y[j,1] y[j,2]])
+        elseif y[j, 1] > x_median
+            y_right = vcat(y_right, [y[j,1] y[j,2]])
+        else
+            println("HERE, j: ", j)
+            l = 1+(length(x_left)/2)
+            for k in 1:(length(x_left)/2)
+                k = trunc(Int64, k)
+                l = trunc(Int64, l)
+                if y[j, :] == x[k, :]
+                    y_left = vcat(y_left, [y[j,1] y[j,2]])
+                end
+                if l <= n_rows
+                    if y[j, :] == x[l, :]
+                        y_right = vcat(y_right, [y[j,1] y[j,2]])
+                    end
+                    l += 1
+                end
+            end
+        end
+    end
+    return [x_left,x_right,y_left,y_right]
+end
+
+x1 = [1.0 2.0; 2.0 3.0; 3.0 2.0; 4.0 5.0; 6.0 6.0; 7.0 1.0]
+x2 = [2.0 0.0; 3.0 2.0; 4.0 0.0; 4.0 5.0; 5.0 4.0]
+y2 = [4.0 0.0; 2.0 0.0; 3.0 2.0; 5.0 4.0; 4.0 5.0]
+
+x3 = [5.0 5.0; 5.0 10.0; 5.0 9.0; 5.0 1.0; 5.0 2.0]
+y3 = mergesort(x3, 2)
+#println("First:  ", splitintwo(x1,mergesort(x,2)))
+#println(x2)
+println("y3:   ", y3)
+println("Third:  ", splitintwo(x3, y3))

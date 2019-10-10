@@ -1,0 +1,35 @@
+#=a = ["BA", 'A', "AA"]
+b = "AA"
+#print(length(a[1]))
+
+temp = []
+#print(length(temp))
+
+for i = 1:0
+    print(i)
+end
+
+
+function test()
+    t = 0
+    t = rec(t)
+    return t
+end
+
+function rec(a)
+    if a < 100
+        a = a + 60
+        rec(a)
+    end
+    return t
+end
+
+print(test())
+=#
+
+dic = Dict([('A', 1), ('B' , 2)])
+a = keys(dic)
+a = collect(keys(dic))
+for i = collect(keys(dic))
+    println(i)
+end
