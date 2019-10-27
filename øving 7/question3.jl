@@ -1,6 +1,5 @@
 
 function mincoins(coins, value)
-    inf = typemax(Int)
     is_greedy = usegreed(coins)
     if is_greedy == true
         return mincoinsgreedy(coins, value)
@@ -9,6 +8,7 @@ function mincoins(coins, value)
         return recursion(coins, value, memo)
     end
 end
+
 
 function recursion(coins, value, memo)
     if memo[value + 1] == Nothing
